@@ -13,7 +13,7 @@ services:
     restart: always
     build: .
     volumes:
-      - ${PATH_TO_CRASHES}:/crashes:ro
+      - ./beacon-fuzz/eth2fuzz/workspace/gofuzz:/crashes:ro
     environment:
       - REDIS_HOST=eth2tg-db
     env_file:
@@ -26,14 +26,10 @@ services:
     image: eth2fuzz-ci
     restart: always
     build: polling-ci
+    pid: "host"
     volumes:
-      - ${PATH_TO_ETH2FUZZ}:/eth2fuzz:rw
+      - ./beacon-fuzz/eth2fuzz:/eth2fuzz:rw
       # launching docker from docker
-      - /var/run/docker.sock:/var/run/docker.sock:rw
+      - /var/run/docker.sock:/var/run/docker.sock
     env_file:
       - .env
-
-networks:
-  default:
-    external:
-      name: caddynet

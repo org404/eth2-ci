@@ -1,0 +1,3 @@
+[submodule "beacon-fuzz"]
+	path = beacon-fuzz
+	url = ./beacon-fuzz

@@ -6,4 +6,5 @@ RUN apk --update add git less openssh && \
 WORKDIR /git
 COPY . .
 
-ENTRYPOINT ["./custom_ci.sh"]
+ENTRYPOINT ["/bin/sh"]
+CMD ["./custom_ci.sh"]
