@@ -1,0 +1,39 @@
+version: "3.7"
+services:
+  eth2tg-db:
+    container_name: eth2tg-db
+    image: redis:latest
+    restart: always
+    ports:
+      - 7001:6379
+
+  eth2tg:
+    container_name: eth2tg
+    image: eth2tg
+    restart: always
+    build: .
+    volumes:
+      - ${PATH_TO_CRASHES}:/crashes:ro
+    environment:
+      - REDIS_HOST=eth2tg-db
+    env_file:
+      - .env
+    depends_on:
+      - eth2tg-db
+
+  eth2fuzz-ci:
+    container_name: eth2fuzz-ci
+    image: eth2fuzz-ci
+    restart: always
+    build: polling-ci
+    volumes:
+      - ${PATH_TO_ETH2FUZZ}:/eth2fuzz:rw
+      # launching docker from docker
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    env_file:
+      - .env
+
+networks:
+  default:
+    external:
+      name: caddynet

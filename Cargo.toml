@@ -1,0 +1,19 @@
+[package]
+name = "eth2tg"
+version = "0.1.1"
+authors = ["kittyandrew <kitty@maudrew.dev>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+grammers-client = "0.2.0"
+grammers-tl-types = "0.2.0"
+dotenv_codegen = "0.15.0"
+grammers-session = "0.2.0"
+simple_logger = "1.11.0"
+tokio = { version = "0.3", features = ["rt", "time"] }
+sha3 = "0.9.1"
+log = "0.4.8"
+redis = { version = "0.18.0", features = ["tokio-comp"] }
+hex = "0.4.2"
