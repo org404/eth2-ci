@@ -50,11 +50,11 @@ echo starting to build docker image for fuzzing..
 echo
 sleep 2
 # Build prysm image for fuzzing
-(cd $PATH_TO_ETH2FUZZ && make prysm)
+(cd $PATH2FUZZ && make prysm)
 echo
 echo running fuzzer
 echo
 sleep 2
 # Fuzz all prysm targets (7) for 1 hour each (3600s)
-# docker run -it -v $PATH_TO_ETH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t 3600
-docker run $nameCmd -d -v $PATH_TO_ETH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t $timeArg
+# docker run -it -v $PATH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t 3600
+docker run $nameCmd -d -v $PATH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t $timeArg

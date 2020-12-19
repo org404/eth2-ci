@@ -1,5 +1,5 @@
 FROM alpine
-RUN apk --update add git less openssh && \
+RUN apk --update add git less make docker openssh && \
     rm -rf /var/lib/apt/lists/* && \
     rm /var/cache/apk/*
 
