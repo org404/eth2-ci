@@ -55,6 +55,9 @@ echo
 echo running fuzzer
 echo
 sleep 2
-# Fuzz all prysm targets (7) for 1 hour each (3600s)
-# docker run -it -v $PATH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t 3600
-docker run $nameCmd -d -v $PATH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t $timeArg
+# Example usage:
+#     # Fuzz all prysm targets (7) for 1 hour each (3600s)
+#     docker run -it -v $PATH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t 3600
+#
+# Note: we have to use abs path, so it's handled automatically in docker-compose.yml
+docker run $nameCmd -d -v $PROJ_ABS_PATH/beacon-fuzz/eth2fuzz/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t $timeArg

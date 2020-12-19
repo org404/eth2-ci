@@ -20,7 +20,7 @@ while true; do
 	echo -e new commit "$shortName" - pulling/running...
 	(cd prysm && git pull -f)
 	# passing arguments to the runner:
-        ./run_eth2fuzz.sh -f -n commit-$shortName -t 1800
+        ./run_eth2fuzz.sh -f -n fuzzing-$shortName -t 1800
     fi
 sleep 10
 done
