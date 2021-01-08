@@ -29,5 +29,5 @@ crontab -e
 Then, prepend following to the file and save it.
 ```
 # Purge all docker image cache every 4 hours.
-0 */4 * * * docker image prune -f
+0 */4 * * * docker system prune -f
 ```
