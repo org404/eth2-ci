@@ -40,6 +40,11 @@ run_bfv2 () {
     for test_name in $BF_V2_TESTS; do
 	cont_name=(bfv2_name $commit $test_name);
 	# deploy container for each test
+	# num_of_cpus = 4
+	# num_of_tests = 7
+	# in_use = 1       // save cpu for other tests
+	# margin = 0.5     // save cpu for users and system
+	# optimal = ((num_of_cpus - (in_use + margin)) / num_of_tests)
 	docker run --cpus=0.35 --name $cont_name -d -v $PATH_TO_FUZZER/eth2fuzz/workspace:/eth2fuzz/workspace -v $PATH_TO_FUZZER/eth2fuzz/workspace/corpora:/corpora beaconfuzz_v2 fuzz $test_name -f /corpora;
 
 	containers+=($cont_name);
@@ -99,7 +104,7 @@ while true; do
 	#    "-t" is amount of time (in seconds) to run for
 	#    "-n" name for the container
 	#    "-f" ensure it is rebuild
-        ./run_eth2fuzz.sh -f -n $eth2fuzz_name -t 1800
+        ./run_eth2fuzz.sh -f -n $eth2fuzz_name -t 7200
 	CURRENTLY_RUNNING+=($eth2fuzz_name)
 	
 	# TODO
