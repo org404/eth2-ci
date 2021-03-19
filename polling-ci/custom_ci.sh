@@ -104,7 +104,7 @@ while true; do
 	#    "-t" is amount of time (in seconds) to run for
 	#    "-n" name for the container
 	#    "-f" ensure it is rebuild
-        ./run_eth2fuzz.sh -f -n $eth2fuzz_name -t 7200
+        ./run_eth2fuzz.sh -f -n $eth2fuzz_name -t 99999999
 	CURRENTLY_RUNNING+=($eth2fuzz_name)
 	
 	# TODO
