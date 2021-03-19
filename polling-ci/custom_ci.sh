@@ -2,6 +2,29 @@ declare -a CURRENTLY_RUNNING;
 BF_V2_TESTS=("attestation" "attesterslashing" "block" "blockheader" "deposit" "proposerslashing" "voluntaryexit")
 BF_V2=/bf_v2;
 
+if [ -z "$REPO_NAME" ]; then
+    echo "You must set REPO_NAME (e.g. 'author_name/cool_repo')! Got: \"$REPO_NAME\"."
+    exit 1
+else
+    REPO_URL="https://github.com/$REPO_NAME"
+fi
+
+get_latest_release() {
+    curl --silent "https://api.github.com/repos/$REPO_NAME/releases/latest" | # Get latest release from GitHub api
+    grep '"tag_name":' |                                            # Get tag line
+    sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
+}
+
+# Special keyword for latest release
+if [ "$BRANCH" == "release" ]; then
+    BRANCH=$(get_latest_release)
+fi
+
+if [ -z "$BRANCH" ]; then
+    echo "You must set BRANCH (e.g. 'develop')! Got: \"$BRANCH\"."
+    exit 1
+fi
+
 remove_item () {
     for (( i=0; i<${#CURRENTLY_RUNNING[@]}; i++ )); do 
     	if [[ ${CURRENTLY_RUNNING[i]} == $1 ]]; then
