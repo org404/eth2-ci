@@ -3,13 +3,17 @@ nameCmd="";
 forceRebuild=false;
 timeArg="";
 
-while getopts "n:ft:" option; do
+while getopts "n:ift:" option; do
   case $option in
     n ) nameArg="$OPTARG"
 	nameCmd="--name $nameArg"
     ;;
     f ) forceRebuild=true ;;
-    t ) timeArg=$OPTARG ;;
+    t ) timeArg=$OPTARG
+	timeCommand="-t $timeArg"
+    ;;
+    i ) timeCommand="-i"
+    ;;
   esac
 done
 
@@ -43,6 +47,8 @@ if [ $forceRebuild ]; then
     sleep 2
     (cd $PATH_TO_ETH2FUZZ && make clean-prysm)
     docker builder prune --force --all
+    docker stop $nameArg || true
+    docker rm $nameArg || true
     echo
 fi
 
@@ -60,4 +66,4 @@ sleep 2
 #     docker run -it -v $PATH2FUZZ/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t 3600
 #
 # Note: we have to use abs path, so it's handled automatically in docker-compose.yml
-docker run $nameCmd -d -v $PROJ_ABS_PATH/beacon-fuzz/eth2fuzz/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm -t $timeArg
+docker run $nameCmd -d -v $PROJ_ABS_PATH/beacon-fuzz/eth2fuzz/workspace:/eth2fuzz/workspace eth2fuzz_prysm continuously -q prysm $timeCommand

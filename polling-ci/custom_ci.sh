@@ -9,15 +9,16 @@ else
     REPO_URL="https://github.com/$REPO_NAME"
 fi
 
-get_latest_release() {
-    curl --silent "https://api.github.com/repos/$REPO_NAME/releases/latest" | # Get latest release from GitHub api
-    grep '"tag_name":' |                                            # Get tag line
-    sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
-}
+# get_latest_release() {
+#     curl -s "https://api.github.com/repos/$REPO_NAME/releases/latest" | # Get latest release from GitHub api
+#     grep '"tag_name":' |                                            # Get tag line
+#     sed -E 's/.*"([^"]+)".*/\1/'                                    # Pluck JSON value
+# }
 
 # Special keyword for latest release
 if [ "$BRANCH" == "release" ]; then
-    BRANCH=$(get_latest_release)
+    # LATEST_RELEASE=$(get_latest_release)
+    BRANCH="master"
 fi
 
 if [ -z "$BRANCH" ]; then
@@ -94,48 +95,50 @@ stop_if_exist () {
     done
 }
 
+REMOTE="init"
 while true; do
     # first time clone
     if [ ! -d "./prysm" ]; then
         git clone --branch "$BRANCH" --recurse-submodules --depth 1 $REPO_URL
-	echo -e looking for updates...
+        echo -e looking for updates...
     fi
 
     # checking for updates
     (cd prysm && git fetch)
-    LOCAL=$(cd prysm && git rev-parse $BRANCH);
-    REMOTE=$(cd prysm && git rev-parse origin/$BRANCH);
     # echo -e \#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\#
     # echo $LOCAL
     # echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # echo $REMOTE
     # echo -e \#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     # check changes and run CI
-    if [ $LOCAL != $REMOTE ]; then
-	oldName=$(echo $LOCAL | head -c 10)
-	echo -e discovered new commit
-	echo -e killing outdated running containers for $oldName...
-	stop_if_exist $CURRENTLY_RUNNING
+    if [ "$LOCAL" != "$REMOTE" ]; then
+        oldName=$(echo $LOCAL | head -c 10)
+        echo -e discovered new commit
+        echo -e killing outdated running containers for $oldName...
+        stop_if_exist $CURRENTLY_RUNNING
 
-	shortName=$(echo $REMOTE | head -c 10)
-	echo -e pulling "$shortName"...
-	(cd prysm && git pull -f)
+        shortName=$(echo $REMOTE | head -c 10)
+        echo -e pulling "$shortName"...
+        (cd prysm && git pull -f)
 
-	echo -e running eth2fuzz for "$shortName"...
-	eth2fuzz_name="eth2fuzz-$shortName"
-	# passing arguments to the runner:
-	#    "-t" is amount of time (in seconds) to run for
-	#    "-n" name for the container
-	#    "-f" ensure it is rebuild
-        ./run_eth2fuzz.sh -f -n $eth2fuzz_name -t 99999999
-	CURRENTLY_RUNNING+=($eth2fuzz_name)
+        echo -e running eth2fuzz for "$shortName"...
+        eth2fuzz_name="eth2fuzz-$shortName"
+        # passing arguments to the runner:
+        #    "-t" is amount of time (in seconds) to run for
+        #    "-n" name for the container
+        #    "-f" ensure it is rebuild
+	#    "-i" to run forever
+        ./run_eth2fuzz.sh -f -i -n $eth2fuzz_name
+        CURRENTLY_RUNNING+=($eth2fuzz_name)
 	
-	# TODO
-	# echo -e running beaconfuzz_v2
-	# run_bfv2
+        # TODO
+        # echo -e running beaconfuzz_v2
+        # run_bfv2
 
-	# adding empty line in the end
-	echo
+        # adding empty line in the end
+        echo
     fi
-sleep 10
+    sleep 30
+    LOCAL=$(cd prysm && git rev-parse $BRANCH)
+    REMOTE=$(cd prysm && git rev-parse origin/$BRANCH)
 done
